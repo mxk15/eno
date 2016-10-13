@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <div id="demo"></div>
+</body>
+<template id='all'>
+    <a v-link="{name:'wsscat'}">wsscat</a>
+    <a v-link="{name:'dsscat'}">dsscat</a>
+    <router-view></router-view>
+    <template id='wss'>
+        <br>
+        <a v-link="{name:'a',params:{id:4}}">a</a>
+        <a v-link="{name:'b',params:{id:5}}">b</a>
+        <p>wsscat</p>
+        <router-view></router-view>
+    </template>
+</template>
+<script src='vue.js'></script>
+<script src='vue-router.js'></script>
+<script>
+    var App = Vue.extend({
+        template:'#all',
+        replace:false,
+    });
+    var wsscat = Vue.extend({
+        template:'#wss'
+    });
+
+    var a = Vue.extend({
+        template:'<p>我是A</p><button @click="Click_1()">去B那</button>',
+        // data:{
+        //     val:'',
+        // },
+        route:{
+            data:function(transition){
+                console.log(transition);
+
+            }
+        },
+        methods:{
+            Click_1:function(){
+                 window.location.href = '#!/wsscat/b/1';
+            }
+        },
+    });
+    var b = Vue.extend({
+        template:'<p>我是B</p><button @click="Click_2()">去A那</button>',
+        methods:{
+            Click_2:function(){
+                 window.location.href = '#!/wsscat/a/2';
+            }
+        },
+    });
+
+    var dsscat = Vue.extend({
+        template:'<p>dsscat</p>'
+    });
+
+    var router = new VueRouter();
+    router.map({
+        '/wsscat':{
+            name:'wsscat',
+            component:wsscat,
+            subRoutes:{
+                '/a/:id':{
+                    component:a,
+                    name:'a',
+                },
+                '/b/:id':{
+                    component:b,
+                    name:'b',
+                },
+            },
+
+
+        },
+        'dsscat':{
+            name:'dsscat',
+            component:dsscat,
+        }
+    });
+
+    router.redirect({
+        '*':'/wsscat/a/3',
+    });
+
+    router.start(App,'#demo');
+</script>
+</html>
